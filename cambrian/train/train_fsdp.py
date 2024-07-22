@@ -464,19 +464,19 @@ def preprocess_llama_3(
             elif i % 2 == 0:
                 round_len = len(tokenizer(rou).input_ids)
                 # Don't predict system prompt
-                target[cur_len : cur_len + 3] = IGNORE_INDEX
+                target[cur_len : cur_len + 2] = IGNORE_INDEX
                 cur_len += round_len
 
             
         target[cur_len:] = IGNORE_INDEX
 
-        if cur_len < tokenizer.model_max_length:
-            if cur_len != total_len:
-                target[:] = IGNORE_INDEX
-                print(
-                    f"WARNING: tokenization mismatch: {cur_len} vs. {total_len}."
-                    f" (ignored)"
-                )
+        # if cur_len < tokenizer.model_max_length:
+        #     if cur_len != total_len:
+        #         target[:] = IGNORE_INDEX
+        #         print(
+        #             f"WARNING: tokenization mismatch: {cur_len} vs. {total_len}."
+        #             f" (ignored)"
+        #         )
         
     return dict(
         input_ids=input_ids,
@@ -1242,6 +1242,9 @@ def make_supervised_data_module(tokenizer: transformers.PreTrainedTokenizer,
     train_dataset = LazySupervisedDataset(tokenizer=tokenizer,
                                 data_path=data_args.data_path,
                                 data_args=data_args)
+    # __import__("ipdb").set_trace()
+    # train_dataset[0]
+    # train_dataset[10]
     data_collator_kwargs = {
             'tokenizer': tokenizer,
         }
@@ -1396,8 +1399,25 @@ def _shard_parameters_(self, params_to_shard) -> None:
 if IS_XLA_AVAILABLE:
     from torch_xla.distributed.fsdp import XlaFullyShardedDataParallel
     XlaFullyShardedDataParallel._shard_parameters_ = _shard_parameters_
+    
+import sys
+import pdb
+
+class ForkedPdb(pdb.Pdb):
+    """A Pdb subclass that may be used
+    from a forked multiprocessing child
+
+    """
+    def interaction(self, *args, **kwargs):
+        _stdin = sys.stdin
+        try:
+            sys.stdin = open('/dev/stdin')
+            pdb.Pdb.interaction(self, *args, **kwargs)
+        finally:
+            sys.stdin = _stdin
 
 def train(INDEX, attn_implementation=None):
+
 
     global local_rank
     
@@ -1409,6 +1429,7 @@ def train(INDEX, attn_implementation=None):
     local_rank = training_args.local_rank
     compute_dtype = (torch.float16 if training_args.fp16 else (torch.bfloat16 if training_args.bf16 else torch.float32))
 
+    # __import__("ipdb").set_trace()
     # verify that the train_batch_size is set correctly
     if training_args.batch_size is not None:
         if IS_XLA_AVAILABLE:
@@ -1623,14 +1644,15 @@ def train(INDEX, attn_implementation=None):
         tokenizer.pad_token_id = 128002
     else:
         tokenizer.pad_token = tokenizer.unk_token
-        if model_args.version in conversation_lib.conv_templates:
-            conversation_lib.default_conversation = conversation_lib.conv_templates[model_args.version]
-        else:
-            logger.warning(f"Conversation version {model_args.version} not found. Using default `vicuna_v1`")
-            conversation_lib.default_conversation = conversation_lib.conv_templates["vicuna_v1"]
 
-    # log_rank0(f"Default conversation version: {conversation_lib.default_conversation.version}")
-    # print_rank0("Then it is", conversation_lib.default_conversation)
+    if model_args.version in conversation_lib.conv_templates:
+        conversation_lib.default_conversation = conversation_lib.conv_templates[model_args.version]
+    else:
+        logger.warning(f"Conversation version {model_args.version} not found. Using default `vicuna_v1`")
+        conversation_lib.default_conversation = conversation_lib.conv_templates["vicuna_v1"]
+
+    log_rank0(f"Default conversation version: {conversation_lib.default_conversation.version}")
+    print_rank0("Then it is", conversation_lib.default_conversation)
 
     if use_cohere:
         tokenizer.pad_token_id = 0
@@ -1752,6 +1774,7 @@ def train(INDEX, attn_implementation=None):
         resume_from_checkpoint=training_args.resume_from_checkpoint
         trainer.train(resume_from_checkpoint=resume_from_checkpoint)
     else:
+        __import__("ipdb").set_trace()
         trainer.train()
 
     log_rank0(f"Training finished: {training_args.output_dir}")
