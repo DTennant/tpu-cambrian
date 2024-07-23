@@ -3,16 +3,16 @@
 export PJRT_DEVICE=TPU &&
 export XLA_USE_BF16=0 &&
 export WANDB_RESUME="allow" &&
-export CKPT_NAME="cambrian-3b-pretrain" &&
+export CKPT_NAME="cambrian-8b-pretrain" &&
 
 export CKPT_DIR="checkpoints/$CKPT_NAME" &&
 
 export LD_LIBRARY_PATH=/home/zhaobc_gm/miniconda3/envs/cambrian/lib/:$LD_LIBRARY_PATH
 
 python cambrian/train/train_tpu.py \
-    --model_name_or_path openlm-research/open_llama_3b_v2 \
-    --version llama_2 \
-    --data_path data/placeholder_data.jsonl \
+    --model_name_or_path meta-llama/Meta-Llama-3-8B-Instruct \
+    --version llama_v3 \
+    --data_path data/placeholder_data_1.jsonl \
     --image_folder data/ \
     --vision_tower_aux_list '["siglip/CLIP-ViT-SO400M-14-384", "openai/clip-vit-large-patch14-336", "facebook/dinov2-giant-res378", "clip-convnext-XXL-multi-stage"]' \
     --vision_tower_aux_token_len_list '[576, 576, 576, 9216]' \
@@ -35,7 +35,7 @@ python cambrian/train/train_tpu.py \
     --image_aspect_ratio pad \
     --bf16 False \
     --output_dir $CKPT_DIR \
-    --num_train_epochs 1 \
+    --num_train_epochs 3 \
     --per_device_train_batch_size 1 \
     --per_device_eval_batch_size 4 \
     --gradient_accumulation_steps 1 \
