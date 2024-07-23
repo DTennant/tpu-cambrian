@@ -1774,7 +1774,7 @@ def train(INDEX, attn_implementation=None):
         resume_from_checkpoint=training_args.resume_from_checkpoint
         trainer.train(resume_from_checkpoint=resume_from_checkpoint)
     else:
-        __import__("ipdb").set_trace()
+        # __import__("ipdb").set_trace()
         trainer.train()
 
     log_rank0(f"Training finished: {training_args.output_dir}")

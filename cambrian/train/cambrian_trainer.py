@@ -639,7 +639,8 @@ class CambrianTrainer(Trainer):
 
     """Override to add custom logs"""
 
-    def _maybe_log_save_evaluate(self, tr_loss, grad_norm, model, trial, epoch, ignore_keys_for_eval):
+    # def _maybe_log_save_evaluate(self, tr_loss, grad_norm, model, trial, epoch, ignore_keys_for_eval):
+    def _maybe_log_save_evaluate(self, tr_loss, model, trial, epoch, ignore_keys_for_eval):
         if self.control.should_log and self.state.global_step > self._globalstep_last_logged:
             if is_torch_tpu_available():
                 import torch_xla.core.xla_model as xm
