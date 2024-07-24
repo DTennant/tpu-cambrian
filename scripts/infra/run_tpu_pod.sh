@@ -1,12 +1,13 @@
 #!/bin/bash
 
-set -x
+# set -x
 set -e
 
 # Default arguments
 DEFAULT_TPU_NAME="tpu-v4-64-pod"
 DEFAULT_TPU_TYPE="v4-64"
 DEFAULT_PD_NAME="tpu-v4-64-pod"
+DEFAULT_BRANCH="ssl_eval"
 DEFAULT_ZONE="us-central2-b"
 PROJECT="focus-album-323718"
 RUNTIME_VERSION="tpu-ubuntu2204-base"
@@ -22,7 +23,7 @@ usage() {
     log "Usage: $0 --tpu_name <TPU_NAME> --tpu_type <TPU_TYPE> [options]"
     log "Options:"
     log "  --pd_name <PD_NAME>        (default: $DEFAULT_PD_NAME)"
-    log "  --branch <BRANCH>          (default: $DEFAULT_BRANCH)"
+    # log "  --branch <BRANCH>          (default: $DEFAULT_BRANCH)"
     log "  --zone <ZONE>              (default: $DEFAULT_ZONE)"
     log "  --script <SCRIPT>          (optional)"
     exit 1
@@ -89,10 +90,13 @@ install_dependencies() {
         log "Error: Failed to copy SSH key to pods."
         exit 1
     fi
-    gcloud compute tpus tpu-vm ssh --zone "$ZONE" $TPU_NAME --project "$PROJECT" --worker=all \
-        --command="chmod 600 ~/.ssh/$SSH_KEY && ssh-add ~/.ssh/$SSH_KEY && ssh -o StrictHostKeyChecking=no git@github.com"
-    # the above command is expected to error, do not check the return code
-    log "SSH key permissions set."
+    # gcloud compute tpus tpu-vm ssh --zone "$ZONE" $TPU_NAME --project "$PROJECT" --worker=all \
+    #     --command="chmod 600 ~/.ssh/$SSH_KEY && ssh-add ~/.ssh/$SSH_KEY && ssh -o StrictHostKeyChecking=no git@github.com"
+    # # the above command is expected to error, do not check the return code
+    # log "SSH key permissions set."
+    # NOTE: run this below cmd every time?
+    # gcloud compute tpus tpu-vm ssh --zone "$ZONE" $TPU_NAME --project "$PROJECT" --worker=all \
+    #     --command="ssh -o StrictHostKeyChecking=no git@github.com"
 
     log "Cloning the repository..."
     gcloud compute tpus tpu-vm ssh --zone "$ZONE" $TPU_NAME --project "$PROJECT" --worker=all \
@@ -107,7 +111,7 @@ install_dependencies() {
     # gcloud compute tpus tpu-vm ssh --zone "$ZONE" $TPU_NAME --project "$PROJECT" --worker=all \
     #     --command="cd ~/cambrian_code && git fetch --all && git checkout $BRANCH && git pull && pip install --upgrade pip setuptools && pip install -e . && pip install -e .[tpu] && pip install torch==2.2.0 torch_xla[tpu]~=2.2.0 -f https://storage.googleapis.com/libtpu-releases/index.html && sudo snap refresh google-cloud-cli"
     gcloud compute tpus tpu-vm ssh --zone "$ZONE" $TPU_NAME --project "$PROJECT" --worker=all \
-        --command="cd ~/cambrian_code && git pull && pip install --upgrade pip setuptools && pip install -e . && pip install -e .[tpu] && pip install torch==2.2.0 torch_xla[tpu]~=2.2.0 -f https://storage.googleapis.com/libtpu-releases/index.html && sudo snap refresh google-cloud-cli"
+        --command="cd ~/cambrian_code && git pull && /usr/bin/pip install --upgrade pip setuptools && /usr/bin/pip install -e . && /usr/bin/pip install -e .[tpu] && /usr/bin/pip install torch==2.2.0 torch_xla[tpu]~=2.2.0 -f https://storage.googleapis.com/libtpu-releases/index.html && sudo snap refresh google-cloud-cli"
     if [ $? -ne 0 ]; then
         log "Error: Failed to install dependencies."
         exit 1
