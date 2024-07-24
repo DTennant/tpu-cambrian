@@ -7,7 +7,7 @@ export CKPT_NAME="cambrian-8b-pretrain" &&
 
 export CKPT_DIR="checkpoints/$CKPT_NAME" &&
 
-export LD_LIBRARY_PATH=/home/zhaobc_gm/miniconda3/envs/cambrian/lib/:$LD_LIBRARY_PATH
+# export LD_LIBRARY_PATH=/home/zhaobc_gm/miniconda3/envs/cambrian/lib/:$LD_LIBRARY_PATH
 
 python cambrian/train/train_tpu.py \
     --model_name_or_path meta-llama/Meta-Llama-3-8B-Instruct \
