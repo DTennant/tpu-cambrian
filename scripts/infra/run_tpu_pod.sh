@@ -111,13 +111,15 @@ install_dependencies() {
     gcloud compute tpus tpu-vm scp --zone "$ZONE" --project "$PROJECT" --worker=all ~/miniconda3.sh $TPU_NAME:~/miniconda3.sh
 
     gcloud compute tpus tpu-vm ssh --zone "$ZONE" $TPU_NAME --project "$PROJECT" --worker=all \
-        --command="bash miniconda3.sh -b -p ~/miniconda && source ~/miniconda/bin/activate && conda init --all"
+        --command="bash miniconda3.sh -u -b -p ~/miniconda && source ~/miniconda/bin/activate && conda init --all"
 
     log "Installing the repository and dependencies..."
+    gcloud compute tpus tpu-vm ssh --zone "$ZONE" $TPU_NAME --project "$PROJECT" --worker=all \
+        --command="cd ~/cambrian_code && git pull && bash install.sh && sudo snap refresh google-cloud-cli"
     # gcloud compute tpus tpu-vm ssh --zone "$ZONE" $TPU_NAME --project "$PROJECT" --worker=all \
     #     --command="cd ~/cambrian_code && git fetch --all && git checkout $BRANCH && git pull && pip install --upgrade pip setuptools && pip install -e . && pip install -e .[tpu] && pip install torch==2.2.0 torch_xla[tpu]~=2.2.0 -f https://storage.googleapis.com/libtpu-releases/index.html && sudo snap refresh google-cloud-cli"
-    gcloud compute tpus tpu-vm ssh --zone "$ZONE" $TPU_NAME --project "$PROJECT" --worker=all \
-        --command="cd ~/cambrian_code && git pull && /usr/bin/pip install --upgrade pip setuptools && /usr/bin/pip install -e . && /usr/bin/pip install -e .[tpu] && /usr/bin/pip install torch==2.2.0 torch_xla[tpu]~=2.2.0 -f https://storage.googleapis.com/libtpu-releases/index.html && sudo snap refresh google-cloud-cli"
+    # gcloud compute tpus tpu-vm ssh --zone "$ZONE" $TPU_NAME --project "$PROJECT" --worker=all \
+    #     --command="cd ~/cambrian_code && git pull && /usr/bin/pip install --upgrade pip setuptools && /usr/bin/pip install -e . && /usr/bin/pip install -e .[tpu] && /usr/bin/pip install torch==2.2.0 torch_xla[tpu]~=2.2.0 -f https://storage.googleapis.com/libtpu-releases/index.html && sudo snap refresh google-cloud-cli"
     if [ $? -ne 0 ]; then
         log "Error: Failed to install dependencies."
         exit 1

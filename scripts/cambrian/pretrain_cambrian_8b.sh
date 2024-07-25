@@ -1,5 +1,8 @@
 #!/bin/bash
 
+conda activate cambrian
+which python
+
 export PJRT_DEVICE=TPU &&
 export XLA_USE_BF16=0 &&
 export WANDB_RESUME="allow" &&
@@ -9,7 +12,7 @@ export CKPT_DIR="checkpoints/$CKPT_NAME" &&
 
 # export LD_LIBRARY_PATH=/home/zhaobc_gm/miniconda3/envs/cambrian/lib/:$LD_LIBRARY_PATH
 
-/usr/bin/python3 cambrian/train/train_tpu.py \
+python3 cambrian/train/train_tpu.py \
     --model_name_or_path meta-llama/Meta-Llama-3-8B-Instruct \
     --version llama_v3 \
     --data_path data/placeholder_data_1.jsonl \
