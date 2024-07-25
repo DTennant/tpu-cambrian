@@ -1,5 +1,6 @@
 #!/bin/bash
-
+source ~/miniconda/bin/activate
+conda init
 conda activate cambrian
 which python
 
