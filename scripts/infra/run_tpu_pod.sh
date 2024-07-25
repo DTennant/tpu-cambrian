@@ -106,6 +106,12 @@ install_dependencies() {
         exit 1
     fi
     log "Repository cloned."
+    
+    log "Install miniconda"
+    gcloud compute tpus tpu-vm scp --zone "$ZONE" --project "$PROJECT" --worker=all ~/miniconda3.sh $TPU_NAME:~/miniconda3.sh
+
+    gcloud compute tpus tpu-vm ssh --zone "$ZONE" $TPU_NAME --project "$PROJECT" --worker=all \
+        --command="bash miniconda3.sh -b -p ~/miniconda && source ~/miniconda/bin/activate && conda init --all"
 
     log "Installing the repository and dependencies..."
     # gcloud compute tpus tpu-vm ssh --zone "$ZONE" $TPU_NAME --project "$PROJECT" --worker=all \
