@@ -80,6 +80,7 @@ log "TPU Type: $TPU_TYPE"
 log "Persistent Disk Name: $PD_NAME"
 log "Branch: $BRANCH"
 log "Zone: $ZONE"
+log "HF Token: $HF_TOKEN"
 
 
 # Install dependencies and attach the persistent disk in parallel
@@ -167,7 +168,7 @@ log "Tmux session created."
 if [ -n "$SCRIPT" ]; then
     log "Running the provided script on all TPU pods..."
     gcloud compute tpus tpu-vm ssh --zone "$ZONE" $TPU_NAME --project "$PROJECT" --worker=all \
-        --command="cd ~/cambrian_code && tmux send-keys -t cambrian 'cd ~/cambrian_code && bash $SCRIPT' C-m"
+        --command="cd ~/cambrian_code && tmux send-keys -t cambrian 'cd ~/cambrian_code && export HF_TOKEN=$HF_TOKEN && bash $SCRIPT' C-m"
     if [ $? -ne 0 ]; then
         log "Error: Failed to execute the provided script."
         exit 1
