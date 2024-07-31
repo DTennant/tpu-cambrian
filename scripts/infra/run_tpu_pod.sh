@@ -95,8 +95,8 @@ sort_github() {
     # # the above command is expected to error, do not check the return code
     # log "SSH key permissions set."
     # NOTE: run this below cmd every time?
-    gcloud compute tpus tpu-vm ssh --zone "$ZONE" $TPU_NAME --project "$PROJECT" --worker=all \
-        --command="ssh -o StrictHostKeyChecking=no git@github.com"
+    # gcloud compute tpus tpu-vm ssh --zone "$ZONE" $TPU_NAME --project "$PROJECT" --worker=all \
+    #     --command="ssh -o StrictHostKeyChecking=no git@github.com"
 
 }
 

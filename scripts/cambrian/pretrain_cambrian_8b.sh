@@ -15,8 +15,8 @@ export LD_LIBRARY_PATH=/home/zhaobc_gm/miniconda/envs/cambrian/lib/:$LD_LIBRARY_
 
     # --model_name_or_path meta-llama/Meta-Llama-3-8B-Instruct \
 python3 cambrian/train/train_tpu.py \
-    --model_name_or_path allenai/OLMo-1B \
-    --version v0 \
+    --model_name_or_path meta-llama/Meta-Llama-3-8B-Instruct \
+    --version llama_v3 \
     --data_path data/placeholder_data_1.jsonl \
     --image_folder data/ \
     --vision_tower_aux_list '["siglip/CLIP-ViT-SO400M-14-384", "openai/clip-vit-large-patch14-336", "facebook/dinov2-giant-res378", "clip-convnext-XXL-multi-stage"]' \
