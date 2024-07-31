@@ -4,11 +4,11 @@
 set -e
 
 # Default arguments
-DEFAULT_TPU_NAME="tpu-v4-64-pod"
-DEFAULT_TPU_TYPE="v4-64"
-DEFAULT_PD_NAME="tpu-v4-64-pod"
+DEFAULT_TPU_NAME="tpu-v3-64-pod-vm"
+DEFAULT_TPU_TYPE="v3-64"
+DEFAULT_PD_NAME="tpu-v3-64-pod-vm"
 DEFAULT_BRANCH="ssl_eval"
-DEFAULT_ZONE="us-central2-b"
+DEFAULT_ZONE="europe-west4-a"
 PROJECT="focus-album-323718"
 RUNTIME_VERSION="tpu-ubuntu2204-base"
 SSH_KEY="id_rsa"
@@ -95,8 +95,8 @@ sort_github() {
     # # the above command is expected to error, do not check the return code
     # log "SSH key permissions set."
     # NOTE: run this below cmd every time?
-    # gcloud compute tpus tpu-vm ssh --zone "$ZONE" $TPU_NAME --project "$PROJECT" --worker=all \
-    #     --command="ssh -o StrictHostKeyChecking=no git@github.com"
+    gcloud compute tpus tpu-vm ssh --zone "$ZONE" $TPU_NAME --project "$PROJECT" --worker=all \
+        --command="ssh -o StrictHostKeyChecking=no git@github.com"
 
 }
 
@@ -120,7 +120,7 @@ install_dependencies() {
 
     log "Installing the repository and dependencies..."
     gcloud compute tpus tpu-vm ssh --zone "$ZONE" $TPU_NAME --project "$PROJECT" --worker=all \
-        --command="cd ~/cambrian_code && git pull && bash install.sh && sudo snap refresh google-cloud-cli"
+        --command="cd ~/cambrian_code && git pull && bash install.sh" # && sudo snap refresh google-cloud-cli"
     # gcloud compute tpus tpu-vm ssh --zone "$ZONE" $TPU_NAME --project "$PROJECT" --worker=all \
     #     --command="cd ~/cambrian_code && git fetch --all && git checkout $BRANCH && git pull && pip install --upgrade pip setuptools && pip install -e . && pip install -e .[tpu] && pip install torch==2.2.0 torch_xla[tpu]~=2.2.0 -f https://storage.googleapis.com/libtpu-releases/index.html && sudo snap refresh google-cloud-cli"
     # gcloud compute tpus tpu-vm ssh --zone "$ZONE" $TPU_NAME --project "$PROJECT" --worker=all \
@@ -151,13 +151,11 @@ attach_and_mount_disk() {
     log "Persistent Disk mounted successfully."
 }
 
-sort_github
+sort_github &
+wait
 # Start both processes concurrently
 install_dependencies
-# attach_and_mount_disk &
 
-# Wait for both processes to finish
-wait
 
 # 6. Create a tmux session
 log "Creating a new tmux session on all TPU pods..."
