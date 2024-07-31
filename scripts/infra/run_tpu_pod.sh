@@ -83,8 +83,7 @@ log "Zone: $ZONE"
 log "HF Token: $HF_TOKEN"
 
 
-# Install dependencies and attach the persistent disk in parallel
-install_dependencies() {
+sort_github() {
     log "Adding SSH key to pods..."
     gcloud compute tpus tpu-vm scp --zone "$ZONE" --project "$PROJECT" --worker=all ~/.ssh/$SSH_KEY $TPU_NAME:~/.ssh/$SSH_KEY
     if [ $? -ne 0 ]; then
@@ -96,8 +95,13 @@ install_dependencies() {
     # # the above command is expected to error, do not check the return code
     # log "SSH key permissions set."
     # NOTE: run this below cmd every time?
-    # gcloud compute tpus tpu-vm ssh --zone "$ZONE" $TPU_NAME --project "$PROJECT" --worker=all \
-    #     --command="ssh -o StrictHostKeyChecking=no git@github.com"
+    gcloud compute tpus tpu-vm ssh --zone "$ZONE" $TPU_NAME --project "$PROJECT" --worker=all \
+        --command="ssh -o StrictHostKeyChecking=no git@github.com"
+
+}
+
+# Install dependencies and attach the persistent disk in parallel
+install_dependencies() {
 
     log "Cloning the repository..."
     gcloud compute tpus tpu-vm ssh --zone "$ZONE" $TPU_NAME --project "$PROJECT" --worker=all \
@@ -147,8 +151,9 @@ attach_and_mount_disk() {
     log "Persistent Disk mounted successfully."
 }
 
+sort_github
 # Start both processes concurrently
-install_dependencies &
+install_dependencies
 # attach_and_mount_disk &
 
 # Wait for both processes to finish

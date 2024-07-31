@@ -5,7 +5,7 @@ conda activate cambrian
 which python
 
 export PJRT_DEVICE=TPU &&
-export XLA_USE_BF16=0 &&
+export XLA_USE_BF16=1 &&
 export WANDB_RESUME="allow" &&
 export CKPT_NAME="cambrian-8b-pretrain" &&
 
@@ -13,9 +13,10 @@ export CKPT_DIR="checkpoints/$CKPT_NAME" &&
 
 export LD_LIBRARY_PATH=/home/zhaobc_gm/miniconda/envs/cambrian/lib/:$LD_LIBRARY_PATH
 
+    # --model_name_or_path meta-llama/Meta-Llama-3-8B-Instruct \
 python3 cambrian/train/train_tpu.py \
-    --model_name_or_path meta-llama/Meta-Llama-3-8B-Instruct \
-    --version llama_v3 \
+    --model_name_or_path allenai/OLMo-1B \
+    --version v0 \
     --data_path data/placeholder_data_1.jsonl \
     --image_folder data/ \
     --vision_tower_aux_list '["siglip/CLIP-ViT-SO400M-14-384", "openai/clip-vit-large-patch14-336", "facebook/dinov2-giant-res378", "clip-convnext-XXL-multi-stage"]' \
