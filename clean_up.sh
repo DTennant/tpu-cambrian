@@ -11,6 +11,6 @@ PD_NAME="${PD_NAME:-$DEFAULT_PD_NAME}"
 ZONE="${ZONE:-$DEFAULT_ZONE}"
 
 
-gcloud compute tpus tpu-vm ssh --zone "$ZONE" "$TPU_NAME" --project "focus-album-323718" --worker=all --command="tmux kill-session -t cambrian"
-gcloud compute tpus tpu-vm ssh --zone "$ZONE" "$TPU_NAME" --project "focus-album-323718" --worker=all --command="rm -rf miniconda"
+# gcloud compute tpus tpu-vm ssh --zone "$ZONE" "$TPU_NAME" --project "focus-album-323718" --worker=all --command="tmux kill-session -t cambrian"
+# gcloud compute tpus tpu-vm ssh --zone "$ZONE" "$TPU_NAME" --project "focus-album-323718" --worker=all --command="rm -rf miniconda"
 gcloud compute tpus tpu-vm ssh --zone "$ZONE" "$TPU_NAME" --project "focus-album-323718" --worker=all --command="rm -rf cambrian_code"
