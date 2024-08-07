@@ -1,3 +1,32 @@
+```
+ssh-keygen # generate a key at ~/.ssh/id_rsa and copy that to github ssh keys for clone repos.
+wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda3.sh
+cd tpu-cambrian
+touch run.sh
+# in run.sh:
+# export HF_TOKEN=hf_xxxxxxxxxxxxxxxxxxxxxxxx
+# bash scripts/infra/run_tpu_pod.sh --script scripts/cambrian/pretrain_cambrian_8b.sh
+# Remember to change the names in the sh files to the correct ones.
+bash run.sh
+
+bash clean_up.sh
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+------------
+
 <div align="center">
 
 #  🪼 *Cambrian-1*:<br> A Fully Open, Vision-Centric Exploration of Multimodal LLMs
